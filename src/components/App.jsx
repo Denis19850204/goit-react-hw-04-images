@@ -9,8 +9,9 @@ import { ImageGallery } from './ImageGallery/ImageGallery';
 export default class App extends Component {
   state = {
     imageList: [],
-    imageSearchName: '',
+    imageSearchName: "",
     page: 1,
+    perPage:12,
     loading: false,
   };
 
@@ -18,25 +19,25 @@ export default class App extends Component {
     const BASE_URL = `https://pixabay.com/api`;
     const KEY = `30165080-69dc7af91b4e9c1a4c0e45d49`;
 
-    if (
-      prevState.imageSearchName !== this.state.imageSearchName
-      // || prevState.page !== this.state.page
-    ) {
-      console.log(prevState.imageSearchName)
-      console.log(this.state.imageSearchName)
+    if (this.state.imageSearchName !== prevState.imageSearchName) {
+      // console.log('qwerty')    
+      // console.log(this.state.imageSearchName)
+      // console.log(prevState.imageSearchName)
       
 
-      // fetch(
-      //   `${BASE_URL}/?q=${this.state.imageSearchName}&page=${this.state.page}&key=${KEY}&image_type=photo&orientation=horizontal&per_page=12`
-      // )
-      //   .then(res => res.json())
-      //   .then(({ hits }) => {
-      //     this.setState(prevState => {
-      //       return {
-      //         imageList:[...prevState.imageList, ...hits]
-      //       }
-      //     });
-      //   });
+      fetch(
+        `${BASE_URL}/?q=${this.state.imageSearchName}&page=${this.state.page}&key=${KEY}&image_type=photo&orientation=horizontal&per_page=${this.state.perPage}`
+      )
+        .then(res => res.json())
+        .then(({ hits }) => {
+          this.setState(prevState => {
+            return {
+              imageList:[...prevState.imageList, ...hits]
+            }
+          });
+        });
+
+
     }
   }
 
