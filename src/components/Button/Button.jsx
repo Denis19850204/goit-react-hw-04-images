@@ -1,4 +1,6 @@
-const Button = ({clickLoadMore}) => {
+import PropTypes from 'prop-types';
+
+const Button = ({ clickLoadMore }) => {
   return (
     <button onClick={clickLoadMore} className="Button">
       Load more
@@ -7,3 +9,7 @@ const Button = ({clickLoadMore}) => {
 };
 
 export default Button;
+
+Button.propTypes = {
+  clickLoadMore: PropTypes.func.isRequired,
+}

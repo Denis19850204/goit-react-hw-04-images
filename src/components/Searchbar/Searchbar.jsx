@@ -1,5 +1,6 @@
 import { Component } from 'react';
-import {toast} from 'react-toastify'
+import { toast } from 'react-toastify'
+
 
 
 export default class Searchbar extends Component {
@@ -21,6 +22,7 @@ export default class Searchbar extends Component {
 
     this.props.onSubmitForm(this.state.imageSearchName);
     this.setState({ imageSearchName: '' });
+    
   };
 
   render() {
@@ -28,7 +30,7 @@ export default class Searchbar extends Component {
       <header className='Searchbar'>
         <form onSubmit={this.submitForm} className='SearchForm'>
           <button type="submit" className='SearchForm-button'>
-            <span className='SearchForm-button-label' >Search</span>
+            <span className='SearchForm-button-label'>Search</span>
           </button>
 
           <input
