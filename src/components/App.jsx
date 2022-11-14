@@ -6,6 +6,7 @@ import Button from './Button/Button';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
 import Modal from './Modal/Modal';
+import FetchApi from './FetchApi/FetchApi';
 
 export default class App extends Component {
   state = {
@@ -20,8 +21,7 @@ export default class App extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    const BASE_URL = `https://pixabay.com/api`;
-    const KEY = `30165080-69dc7af91b4e9c1a4c0e45d49`;
+    const { imageSearchName, page, perPage } = this.state;
 
     if (
       this.state.imageSearchName !== prevState.imageSearchName ||
@@ -29,40 +29,21 @@ export default class App extends Component {
     ) {
       this.setState({ loading: true });
 
-      setTimeout(() => {
-        fetch(
-          `${BASE_URL}/?q=${this.state.imageSearchName}&page=${this.state.page}&key=${KEY}&image_type=photo&orientation=horizontal&per_page=${this.state.perPage}`
-        )
-          .then(res => res.json())
-          .then(({ hits }) => {
-            this.setState(prevState => {
-              return {
-                imageList: [...prevState.imageList, ...hits],
-              };
-            });
-          })
-          .finally(() => this.setState({ loading: false }));
-      }, 500);
-
-      // fetch(
-      //   `${BASE_URL}/?q=${this.state.imageSearchName}&page=${this.state.page}&key=${KEY}&image_type=photo&orientation=horizontal&per_page=${this.state.perPage}`
-      // )
-      //   .then(res => res.json())
-      //   .then(({ hits }) => {
-      //     this.setState(prevState => {
-      //       return {
-      //         imageList: [...prevState.imageList, ...hits],
-      //       };
-      //     });
-      //   })
-      //   .finally(() => this.setState({ loading: false }));
+      FetchApi(imageSearchName, page, perPage)
+        .then(res => res.json())
+        .then(({ hits }) => {
+          this.setState(prevState => {
+            return {
+              imageList: [...prevState.imageList, ...hits],
+            };
+          });
+        })
+        .finally(() => this.setState({ loading: false }));
     }
   }
 
   handleFormSubmit = imageSearchName => {
-    this.setState({ imageSearchName });
-    this.setState({ page: 1 });
-    this.setState({ imageList: [] });
+    this.setState({ imageSearchName, page: 1, imageList: [] });
   };
 
   clickLoadMore = () => {
@@ -93,10 +74,11 @@ export default class App extends Component {
           imageList={imageList}
           imageClick={this.handleImageClick}
         />
-        <ToastContainer autoClose={2000} />
+
         {!loading && imageList.length >= perPage && (
           <Button clickLoadMore={this.clickLoadMore} />
         )}
+
         {loading && <Loader />}
 
         {showModal && (
@@ -104,6 +86,7 @@ export default class App extends Component {
             <img src={url} alt={tags} />
           </Modal>
         )}
+        <ToastContainer autoClose={2000} />
       </div>
     );
   }
