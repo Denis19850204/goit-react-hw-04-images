@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Searchbar from './Searchbar/Searchbar';
@@ -8,86 +7,70 @@ import { Loader } from './Loader/Loader';
 import Modal from './Modal/Modal';
 import FetchApi from './FetchApi/FetchApi';
 
-export default class App extends Component {
-  state = {
-    imageList: [],
-    imageSearchName: '',
-    page: 1,
-    perPage: 12,
-    loading: false,
-    showModal: false,
-    url: null,
-    tags: null,
-  };
+import { useState, useEffect } from 'react';
 
-  componentDidUpdate(prevProps, prevState) {
-    const { imageSearchName, page, perPage } = this.state;
+export default function App() {
+  const [imageList, setImageList] = useState([]);
+  const [imageSearchName, setImageSearchName] = useState('');
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(12);
+  const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [url, setUrl] = useState(null);
+  const [tags, setTags] = useState(null);
 
-    if (
-      this.state.imageSearchName !== prevState.imageSearchName ||
-      this.state.page !== prevState.page
-    ) {
-      this.setState({ loading: true });
-
-      FetchApi(imageSearchName, page, perPage)
-        .then(res => res.json())
-        .then(({ hits }) => {
-          this.setState(prevState => {
-            return {
-              imageList: [...prevState.imageList, ...hits],
-            };
-          });
-        })
-        .finally(() => this.setState({ loading: false }));
+  useEffect(() => {
+    if (!imageSearchName || !page) {
+      return;
     }
-  }
+    setLoading(true);
 
-  handleFormSubmit = imageSearchName => {
-    this.setState({ imageSearchName, page: 1, imageList: [] });
+    FetchApi(imageSearchName, page, perPage)
+      .then(res => res.json())
+      .then(({ hits }) => {
+        setImageList(imageList => [...imageList, ...hits]);
+      })
+      .finally(() => setLoading(false));
+  }, [imageSearchName, page, perPage]);
+
+  const handleFormSubmit = imageSearchName => {
+    setImageSearchName(imageSearchName);
+    setPage(1);
+    setImageList([]);
   };
 
-  clickLoadMore = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-      loading: true,
-    }));
+  const clickLoadMore = () => {
+    setPage(page + 1);
+    setLoading(true);
   };
 
-  toggleModal = () => {
-    this.setState(state => ({
-      showModal: !state.showModal,
-    }));
+  const toggleModal = () => {
+    setShowModal(!showModal);
   };
 
-  handleImageClick = (url, tags) => {
-    this.setState({ url, tags });
-    this.toggleModal();
+  const handleImageClick = (url, tags) => {
+    setUrl(url);
+    setTags(tags);
+    toggleModal();
   };
 
-  render() {
-    const { loading, imageList, perPage, showModal, url, tags } = this.state;
+  return (
+    <div className="App">
+      <Searchbar onSubmitForm={handleFormSubmit} />
+      <ImageGallery imageList={imageList} imageClick={handleImageClick} />
 
-    return (
-      <div className="App">
-        <Searchbar onSubmitForm={this.handleFormSubmit} />
-        <ImageGallery
-          imageList={imageList}
-          imageClick={this.handleImageClick}
-        />
+      {!loading && imageList.length >= perPage && (
+        <Button clickLoadMore={clickLoadMore} />
+      )}
 
-        {!loading && imageList.length >= perPage && (
-          <Button clickLoadMore={this.clickLoadMore} />
-        )}
+      {loading && <Loader />}
 
-        {loading && <Loader />}
-
-        {showModal && (
-          <Modal onClose={this.toggleModal}>
-            <img src={url} alt={tags} />
-          </Modal>
-        )}
-        <ToastContainer autoClose={2000} />
-      </div>
-    );
-  }
+      {showModal && (
+        <Modal onClose={toggleModal}>
+          <img src={url} alt={tags} />
+        </Modal>
+      )}
+      <ToastContainer autoClose={2000} />
+    </div>
+  );
 }
