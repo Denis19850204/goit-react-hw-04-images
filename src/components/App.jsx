@@ -13,7 +13,7 @@ export default function App() {
   const [imageList, setImageList] = useState([]);
   const [imageSearchName, setImageSearchName] = useState('');
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(12);
+  const [perPage] = useState(12);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [url, setUrl] = useState(null);
