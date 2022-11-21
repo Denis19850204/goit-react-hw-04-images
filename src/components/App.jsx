@@ -59,9 +59,11 @@ export default function App() {
       <Searchbar onSubmitForm={handleFormSubmit} />
       <ImageGallery imageList={imageList} imageClick={handleImageClick} />
 
-      {!loading && imageList.length >= perPage && (
-        <Button clickLoadMore={clickLoadMore} />
-      )}
+      {!loading &&
+        imageList.length >= perPage &&
+        Number.isInteger(imageList.length / perPage) && (
+          <Button clickLoadMore={clickLoadMore} />
+        )}
 
       {loading && <Loader />}
 
